@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { PhoneIcon, EnvelopeIcon, MapPinIcon, ClockIcon } from '@heroicons/vue/24/outline'
+import { TrophyIcon, UserGroupIcon, HeartIcon } from '@heroicons/vue/24/solid'
 
 const form = ref({
   name: '',
@@ -11,7 +12,12 @@ const form = ref({
   message: ''
 })
 
+const isSubmitting = ref(false)
+
 const submitForm = () => {
+  if (isSubmitting.value) return
+  
+  isSubmitting.value = true
   console.log('Form submitted:', form.value)
   alert('Vielen Dank für Ihre Nachricht! Wir melden uns bald bei Ihnen.')
   
@@ -24,6 +30,8 @@ const submitForm = () => {
     subject: 'general',
     message: ''
   }
+  
+  isSubmitting.value = false
 }
 
 const contactInfo = [
@@ -83,21 +91,9 @@ const team = [
 ]
 
 const stats = [
-  { 
-    icon: () => import('@heroicons/vue/24/solid').then(m => m.TrophyIcon), 
-    number: '500+', 
-    label: 'Erfolgreiche Vermittlungen' 
-  },
-  { 
-    icon: () => import('@heroicons/vue/24/solid').then(m => m.UserGroupIcon), 
-    number: '15+', 
-    label: 'Jahre Erfahrung' 
-  },
-  { 
-    icon: () => import('@heroicons/vue/24/solid').then(m => m.HeartIcon), 
-    number: '98%', 
-    label: 'Kundenzufriedenheit' 
-  }
+  { icon: TrophyIcon, number: '500+', label: 'Erfolgreiche Vermittlungen' },
+  { icon: UserGroupIcon, number: '15+', label: 'Jahre Erfahrung' },
+  { icon: HeartIcon, number: '98%', label: 'Kundenzufriedenheit' }
 ]
 </script>
 
@@ -130,7 +126,8 @@ const stats = [
               <div 
                 v-for="info in contactInfo" 
                 :key="info.title"
-                class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
+                :disabled="isSubmitting"
+                class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
                   <component :is="info.icon" class="w-6 h-6 text-primary-600" />
@@ -238,7 +235,7 @@ const stats = [
               </div>
               
               <button type="submit" class="w-full btn-primary">
-                Nachricht senden
+                {{ isSubmitting ? 'Wird gesendet...' : 'Nachricht senden' }}
               </button>
             </form>
           </div>
